@@ -109,6 +109,19 @@ def subscribe_socket(ws):
     '''Fufill the websocket URL of /subscribe, every update notify the
        websocket and read updates from the websocket '''
     # XXX: TODO IMPLEMENT ME
+    client = Client()
+    clients.append(client)
+    g = gevent.spawn(read_ws, ws, client)
+    try:
+        while True:
+            msg = client.get()
+            ws.send(msg)
+    except Exception as e:
+        print("WS Error %s" % e)
+    finally:
+        clients.remove(client)
+        gevent.kill(g)
+
     return None
 
 
@@ -127,23 +140,25 @@ def flask_post_json():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
+    myWorld.set(entity, flask_post_json())
     return None
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-    return None
+    return flask.jsonify(myWorld.world())
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+    return flask.jsonify(myWorld.get(entity))
 
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     '''Clear the world out!'''
-    return None
+    myWorld.clear()
+    return flask.jsonify(myWorld.world())
 
 
 
