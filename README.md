@@ -59,3 +59,8 @@ Contributors
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
+* Lan Zhang
+  
+References
+============
+* https://github.com/abramhindle/WebSocketsExamples
